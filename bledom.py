@@ -13,52 +13,34 @@ SERVICE_UUID = "0000fff0-0000-1000-8000-00805f9b34fb"
 CHARACTERISTIC_UUID = "0000fff3-0000-1000-8000-00805f9b34fb"
 MAX_CONNECTIONS = 20
 
-EFFECT_0  = "three color jump"
-EFFECT_1  = "seven color jump"
-EFFECT_2  = "three color cross fade"
-EFFECT_3  = "seven color cross fade"
-EFFECT_4  = "red fade"
-EFFECT_5  = "green fade"
-EFFECT_6  = "blue fade"
-EFFECT_7  = "yellow fade"
-EFFECT_8  = "cyan fade"
-EFFECT_9  = "magenta fade"
-EFFECT_10 = "white fade"
-EFFECT_11 = "red green cross fade"
-EFFECT_12 = "red blue cross fade"
-EFFECT_13 = "green blue cross fade"
-EFFECT_14 = "seven color strobe flash"
-EFFECT_15 = "red strobe flash"
-EFFECT_16 = "green strobe flash"
-EFFECT_17 = "blue strobe flash"
-EFFECT_18 = "yellow strobe flash"
-EFFECT_19 = "cyan strobe flash"
-EFFECT_20 = "magenta strobe flash"
-EFFECT_21 = "white strobe flash"
-
 MODES = {
-    EFFECT_0: 0x87,
-    EFFECT_1: 0x88,
-    EFFECT_2: 0x89,
-    EFFECT_3: 0x8a,
-    EFFECT_4: 0x8b,
-    EFFECT_5: 0x8c,
-    EFFECT_6: 0x8d,
-    EFFECT_7: 0x8e,
-    EFFECT_8: 0x8f,
-    EFFECT_9: 0x90,
-    EFFECT_10: 0x91,
-    EFFECT_11: 0x92,
-    EFFECT_12: 0x93,
-    EFFECT_13: 0x94,
-    EFFECT_14: 0x95,
-    EFFECT_15: 0x96,
-    EFFECT_16: 0x97,
-    EFFECT_17: 0x98,
-    EFFECT_18: 0x99,
-    EFFECT_19: 0x9a,
-    EFFECT_20: 0x9b,
-    EFFECT_21: 0x9c
+    "Static Red": 0x80,
+    "Static Blue": 0x81,
+    "Static Green": 0x82,
+    "Static Cyan": 0x83, #
+    "Static Yellow": 0x84, #
+    "Static Purple": 0x85,
+    "Static White": 0x86,
+    "Three Color Jumping Change": 0x87,
+    "Seven Color Jumping Change": 0x88,
+    "Three Color Cross Fade": 0x89,
+    "Seven Color Cross Fade": 0x8a,
+    "Red Gradual Change": 0x8b,
+    "Green Gradual Change": 0x8c,
+    "Blue Gradual Change": 0x8d,
+    "Yellow Gradual Change": 0x8e, #
+    "Cyan Gradual Change": 0x8f,
+    "White Gradual Change": 0x91,
+    "Red Green Cross Fade": 0x92,
+    "Green Blue Cross Fade": 0x94,
+    "Seven Color Stobe Flash": 0x95,
+    "Red Strobe Flash": 0x96,
+    "Green Strobe Flash": 0x97,
+    "Blue Strobe Flash": 0x98,
+    "Yellow Strobe Flash": 0x99, #
+    "Cyan Strobe Flash": 0x9a,
+    "Purple Strobe Flash": 0x9b,
+    "White Strobe Flash": 0x9c,
 }
 
 class ElkBledomLight:
@@ -103,10 +85,10 @@ class ElkBledomLight:
         pw = bytearray([0x7e, 0x04, 0x04, 0xf0, 0x00, 0x01, 0xff, 0x00, 0xef] if power else [0x7e, 0x04, 0x04, 0x00, 0x00, 0x00, 0xff, 0x00, 0xef])
         await self.client.write_gatt_char(CHARACTERISTIC_UUID, pw, response=True)
 
-    # async def set_mode(self, mode):
-    #     assert mode >= 0x87 and mode <= 0x9c
-    #     md = bytearray([0x7e, 0x00, 0x03, mode, 0x03, 0x00, 0x00, 0x00, 0xef])
-    #     await self.client.write_gatt_char(CHARACTERISTIC_UUID, md, response=True)
+    async def set_mode(self, mode):
+        assert mode >= 0x87 and mode <= 0x9c
+        md = bytearray([0x7e, 0x05, 0x03, mode, 0x03, 0xff, 0xff, 0x00, 0xef])
+        await self.client.write_gatt_char(CHARACTERISTIC_UUID, md, response=True)
 
 async def main():
     light = ElkBledomLight(DEVICE_ADDR)
@@ -126,11 +108,11 @@ async def main():
 
     # await asyncio.sleep(1)
 
-    # await light.set_mode(0x87)
+    # await light.set_mode(MODES["Green Blue Cross Fade"])
 
-    await light.set_power(False)
-    await asyncio.sleep(1)
-    await light.set_power(True)
+    # await light.set_power(False)
+    # await asyncio.sleep(1)
+    # await light.set_power(True)
 
     await light.disconnect()
 
