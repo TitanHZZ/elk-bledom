@@ -90,6 +90,11 @@ class ElkBledomLight:
         md = bytearray([0x7e, 0x05, 0x03, mode, 0x03, 0xff, 0xff, 0x00, 0xef])
         await self.client.write_gatt_char(CHARACTERISTIC_UUID, md, response=True)
 
+    async def set_mode_speed(self, speed):
+        assert speed >= 0x00 and speed <= 0x64
+        sp = bytearray([0x7e, 0x04, 0x02, speed, 0xff, 0xff, 0xff, 0x00, 0xef])
+        await self.client.write_gatt_char(CHARACTERISTIC_UUID, sp, response=True)
+
 async def main():
     light = ElkBledomLight(DEVICE_ADDR)
     await light.connect()
@@ -108,7 +113,12 @@ async def main():
 
     # await asyncio.sleep(1)
 
-    # await light.set_mode(MODES["Green Blue Cross Fade"])
+    await light.set_mode(MODES["Red Strobe Flash"])
+    await light.set_mode_speed(0x64)
+    await asyncio.sleep(3)
+    await light.set_mode_speed(0x00)
+    await asyncio.sleep(3)
+    await light.set_color("0000FF")
 
     # await light.set_power(False)
     # await asyncio.sleep(1)
